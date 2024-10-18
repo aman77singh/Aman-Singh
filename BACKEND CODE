@@ -1,0 +1,110 @@
+# Import Libraries
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pennylane as qml
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
+from scipy.optimize import minimize
+
+# Load the Dataset
+data = pd.read_csv(r'C:\Users\aman\Desktop\hackathon\archive\creditcard.csv')
+
+# Preprocess Data
+features = data.drop(['Class'], axis=1)  # Exclude the target variable
+target = data['Class']
+
+# Use only the first 10,000 rows
+features = features.iloc[:10000]
+target = target.iloc[:10000]
+
+# Scale the features
+scaler = StandardScaler()
+features_scaled = scaler.fit_transform(features)
+
+# Select only the first 27 features to match with the number of qubits
+features_subset = features_scaled[:, :27]  # Limit to 27 features
+
+# Split the data into training and testing sets (80% training, 20% testing)
+X_train, X_test, y_train, y_test = train_test_split(features_subset, target, test_size=0.2, random_state=42)
+
+# Set Up Quantum Device
+n_features = features_subset.shape[1]
+n_qubits = n_features  # Using one qubit per feature
+
+# Create a quantum device using PennyLane and Qiskit
+dev = qml.device('qiskit.aer', wires=n_qubits)
+
+# Define a quantum circuit for encoding data
+@qml.qnode(dev)
+def circuit(weights, inputs):
+    # Encode input data into quantum states using rotation gates
+    for i in range(n_qubits):
+        qml.RX(inputs[i], wires=i)
+    
+    # Apply entangling gates
+    for i in range(n_qubits - 1):
+        qml.CNOT(wires=[i, i + 1])
+    
+    # Return the probabilities for measurement
+    return qml.probs(wires=range(n_qubits))
+
+# Define the Cost Function
+def softmax(x):
+    e_x = np.exp(x - np.max(x))  # Shift for numerical stability
+    return e_x / e_x.sum(axis=0)
+
+def cost(weights):
+    predictions = []
+    for i in range(X_train.shape[0]):
+        prediction = circuit(weights, X_train[i])
+        probabilities = softmax(np.abs(prediction)**2)
+        
+        # Use a small epsilon to prevent log(0)
+        epsilon = 1e-6
+        probabilities = np.clip(probabilities, epsilon, 1 - epsilon)
+
+        predictions.append(probabilities[1])  # Probability of class 1 (fraudulent transaction)
+
+    return -np.sum(y_train * np.log(predictions) + (1 - y_train) * np.log(1 - predictions))
+
+# Train the Model
+# Initialize weights randomly
+initial_weights = np.random.rand(n_qubits)
+
+# Define a callback function to monitor progress during optimization
+def callback(weights):
+    print(f"Current cost: {cost(weights)}")
+
+# Optimize weights using a classical optimizer (BFGS)
+opt_result = minimize(cost, initial_weights, method='BFGS', callback=callback)
+optimal_weights = opt_result.x
+
+# Make Predictions
+def predict(weights, data):
+    predictions = []
+    for i in range(data.shape[0]):
+        prediction = circuit(weights, data[i])
+        probabilities = softmax(np.abs(prediction)**2)
+        predictions.append(probabilities[1])  # Probability of class 1 (fraudulent transaction)
+    return np.array(predictions)
+
+# Get predictions on the test set
+y_pred_probs = predict(optimal_weights, X_test)
+
+# Convert probabilities to binary predictions using a threshold of 0.5
+y_pred = (y_pred_probs > 0.5).astype(int)
+
+# Evaluate the Model
+print(classification_report(y_test, y_pred))
+
+# Additional Evaluation: Plotting the Confusion Matrix
+conf_matrix = confusion_matrix(y_test, y_pred)
+plt.figure(figsize=(6,4))
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues')
+plt.xlabel('Predicted Label')
+plt.ylabel('True Label')
+plt.title('Confusion Matrix for Fraud Detection')
+plt.show()
