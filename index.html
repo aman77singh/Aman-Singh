@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>For Someone Special</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Georgia', serif;
+      background: radial-gradient(circle at top left, #ffe4ec, #fff0f5);
+      overflow: hidden;
+      color: #4a0f33;
+    }
+
+    .page {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+      background: inherit;
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .active {
+      opacity: 1;
+      pointer-events: auto;
+      z-index: 5;
+    }
+
+    .transitionIn {
+      animation: pageEnter 1.5s ease both;
+    }
+
+    .transitionOut {
+      animation: pageExit 1s ease forwards;
+    }
+
+    @keyframes pageEnter {
+      0% {
+        opacity: 0;
+        transform: rotateY(-90deg) scale(0.9);
+      }
+      100% {
+        opacity: 1;
+        transform: rotateY(0deg) scale(1);
+      }
+    }
+
+    @keyframes pageExit {
+      0% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(1.1) rotateY(90deg);
+      }
+    }
+
+    h1, h2 {
+      font-size: 2.5em;
+      text-shadow: 0 0 15px #ff8ebf;
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      from {
+        text-shadow: 0 0 10px #ff8ebf, 0 0 20px #ff8ebf;
+      }
+      to {
+        text-shadow: 0 0 20px #ff1493, 0 0 30px #ff1493;
+      }
+    }
+
+    button {
+      padding: 15px 30px;
+      font-size: 1.2em;
+      background-color: #ff4081;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      margin-top: 20px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    button:hover {
+      transform: scale(1.1);
+    }
+
+    #storyEntry {
+      font-size: 1.3em;
+      background: rgba(255, 255, 255, 0.85);
+      padding: 25px;
+      border-radius: 20px;
+      max-width: 700px;
+      box-shadow: 0 0 25px rgba(255, 105, 135, 0.3);
+    }
+
+    #finalQuestion {
+      display: none;
+      font-size: 1.5em;
+      margin-top: 30px;
+      color: #880e4f;
+    }
+
+    /* Hearts */
+    .heart {
+      position: absolute;
+      top: -30px;
+      color: #ff1493;
+      font-size: 22px;
+      animation: fall 3s linear forwards;
+      pointer-events: none;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh);
+        opacity: 1;
+      }
+    }
+
+    #heartContainer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Page 1 -->
+  <div class="page active" id="landing">
+    <h1>I have something to say...</h1>
+  </div>
+
+  <!-- Page 2 -->
+  <div class="page" id="explore">
+    <h2>This is our story</h2>
+    <button id="timelineButton">Explore the Timeline</button>
+    <div id="heartContainer"></div>
+  </div>
+
+  <!-- Page 3 -->
+  <div class="page" id="timeline">
+    <div id="storyEntry">
+      Day 1: We first met... it was nothing special at the time, just two strangers crossing paths. No feelings. No expectations.
+    </div>
+    <button class="nextDay" onclick="nextEntry()">Next Day</button>
+    <div id="finalQuestion">
+      <p>You once said I was a material worth dating...</p>
+      <p><strong>Am I still worth it?</strong></p>
+      <button onclick="revealLove()">Yes, You Are</button>
+    </div>
+  </div>
+
+  <script>
+    const entries = [
+      "Day 1: We first met... it was nothing special at the time, just two strangers crossing paths. No feelings. No expectations.",
+      "Day 5: We began talking more often. And suddenly, those late-night calls became the best part of my day.",
+      "Day 9: I noticed your smile when I talked. You laughed at my lame jokes. I could tell—you were interested. And... I was too.",
+      "Day 14: I still remember your words... you said I was a material worth dating. Those words haven’t left me since."
+    ];
+
+    let entryIndex = 0;
+
+    function nextEntry() {
+      entryIndex++;
+      const entryBox = document.getElementById('storyEntry');
+      if (entryIndex < entries.length) {
+        entryBox.innerHTML = entries[entryIndex];
+      } else {
+        entryBox.style.display = "none";
+        document.querySelector(".nextDay").style.display = "none";
+        document.getElementById("finalQuestion").style.display = "block";
+      }
+    }
+
+    function revealLove() {
+      document.getElementById("finalQuestion").innerHTML = "<p>You’ve made my heart smile again.</p><p>Thank you for believing in us.</p>";
+    }
+
+    function transitionPages(fromId, toId) {
+      const fromPage = document.getElementById(fromId);
+      const toPage = document.getElementById(toId);
+
+      fromPage.classList.add('transitionOut');
+      setTimeout(() => {
+        fromPage.classList.remove('active', 'transitionOut');
+        toPage.classList.add('active', 'transitionIn');
+        setTimeout(() => {
+          toPage.classList.remove('transitionIn');
+        }, 1500);
+      }, 1000);
+    }
+
+    setTimeout(() => {
+      transitionPages('landing', 'explore');
+    }, 4000);
+
+    const heartContainer = document.getElementById('heartContainer');
+    let collectedHearts = 0;
+    const maxHearts = 80;
+    let heartInterval;
+
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+      heart.innerHTML = '💖';
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.fontSize = (Math.random() * 20 + 18) + 'px';
+
+      heartContainer.appendChild(heart);
+
+      heart.addEventListener('animationend', () => {
+        collectedHearts++;
+        if (collectedHearts >= maxHearts) {
+          clearInterval(heartInterval);
+          setTimeout(() => {
+            transitionPages('explore', 'timeline');
+          }, 1000);
+        }
+      });
+    }
+
+    document.getElementById('timelineButton').addEventListener('click', () => {
+      heartInterval = setInterval(createHeart, 80);
+    });
+  </script>
+
+</body>
+</html>
