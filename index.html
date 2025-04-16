@@ -71,17 +71,7 @@
 
     h1, h2 {
       font-size: 2.5em;
-      text-shadow: 0 0 15px #ff8ebf;
-      animation: glow 2s ease-in-out infinite alternate;
-    }
-
-    @keyframes glow {
-      from {
-        text-shadow: 0 0 10px #ff8ebf, 0 0 20px #ff8ebf;
-      }
-      to {
-        text-shadow: 0 0 20px #ff1493, 0 0 30px #ff1493;
-      }
+      margin: 0 0 20px 0;
     }
 
     button {
@@ -95,6 +85,7 @@
       margin-top: 20px;
       cursor: pointer;
       transition: transform 0.2s ease;
+      z-index: 10;
     }
 
     button:hover {
@@ -125,6 +116,7 @@
       font-size: 22px;
       animation: fall 3s linear forwards;
       pointer-events: none;
+      z-index: 0;
     }
 
     @keyframes fall {
@@ -139,13 +131,14 @@
     }
 
     #heartContainer {
-      position: absolute;
+      position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
       pointer-events: none;
-      z-index: 2;
+      z-index: 0; /* Ensures hearts are always behind everything */
     }
   </style>
 </head>
@@ -160,7 +153,6 @@
   <div class="page" id="explore">
     <h2>This is our story</h2>
     <button id="timelineButton">Explore the Timeline</button>
-    <div id="heartContainer"></div>
   </div>
 
   <!-- Page 3 -->
@@ -175,6 +167,8 @@
       <button onclick="revealLove()">Yes, You Are</button>
     </div>
   </div>
+
+  <div id="heartContainer"></div>
 
   <script>
     const entries = [
@@ -231,10 +225,12 @@
       heart.innerHTML = '💖';
       heart.style.left = Math.random() * 100 + 'vw';
       heart.style.fontSize = (Math.random() * 20 + 18) + 'px';
+      heart.style.animationDuration = (2 + Math.random() * 2) + 's';
 
       heartContainer.appendChild(heart);
 
       heart.addEventListener('animationend', () => {
+        heart.remove();
         collectedHearts++;
         if (collectedHearts >= maxHearts) {
           clearInterval(heartInterval);
@@ -246,6 +242,7 @@
     }
 
     document.getElementById('timelineButton').addEventListener('click', () => {
+      collectedHearts = 0;
       heartInterval = setInterval(createHeart, 80);
     });
   </script>
