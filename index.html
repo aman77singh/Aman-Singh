@@ -155,7 +155,7 @@
 <body>
 
   <!-- Audio for Background Music -->
-  <audio autoplay loop>
+  <audio id="backgroundMusic" loop>
     <source src="https://github.com/aman77singh/Aman-Singh/blob/main/heat-waves.mp3?raw=true" type="audio/mp3">
     Your browser does not support the audio element.
   </audio>
@@ -255,6 +255,11 @@
     const maxHearts = 50;
     let heartInterval;
 
+    document.getElementById('timelineButton').addEventListener('click', () => {
+      document.getElementById("backgroundMusic").play();  // Start music when the button is clicked
+      heartInterval = setInterval(createHeart, 100);
+    });
+
     function createHeart() {
       const heart = document.createElement('div');
       heart.classList.add('heart');
@@ -272,10 +277,6 @@
         }
       });
     }
-
-    document.getElementById('timelineButton').addEventListener('click', () => {
-      heartInterval = setInterval(createHeart, 100);
-    });
   </script>
 </body>
 </html>
