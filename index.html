@@ -101,6 +101,22 @@
       margin-top: 30px;
     }
 
+    #finalQuestion button {
+      padding: 14px 30px;
+      font-size: 1.2em;
+      background: linear-gradient(45deg, #ff4081, #f50057);
+      color: #fff;
+      border: none;
+      border-radius: 25px;
+      box-shadow: 0 5px 15px rgba(255, 64, 129, 0.5);
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    #finalQuestion button:hover {
+      transform: scale(1.05);
+    }
+
     /* Falling Hearts */
     .heart {
       position: absolute;
@@ -162,6 +178,9 @@
     </div>
   </div>
 
+  <!-- Audio -->
+  <audio id="heatWaveSong" src="heat-waves.mp3" autoplay loop></audio>
+
   <script>
     const entries = [
       "Day 1: We first met... it was nothing special at the time, just two strangers crossing paths. No feelings. No expectations.",
@@ -186,18 +205,15 @@
 
     function revealLove() {
       document.getElementById("finalQuestion").innerHTML = "<p>You’ve made my heart smile again😍🥰.</p><p>Thank you for believing in us🥰.</p>";
-
-      // Trigger heart falling effect with higher density
       createFallingHearts();
     }
 
     function createFallingHearts() {
       const heartContainer = document.getElementById('heartContainer');
       let collectedHearts = 0;
-      const maxHearts = 50; // Increased the heart density
+      const maxHearts = 50;
       let heartInterval;
 
-      // Create a heart every 50ms for higher density
       heartInterval = setInterval(() => {
         const heart = document.createElement('div');
         heart.classList.add('heart');
@@ -213,26 +229,23 @@
             clearInterval(heartInterval);
           }
         });
-      }, 50); // Shorter interval for higher density
+      }, 50);
     }
 
     function showPage(from, to) {
       document.getElementById(from).classList.remove('active');
       setTimeout(() => {
         document.getElementById(to).classList.add('active');
-      }, 300); // let fadeout finish before fadein
+      }, 300);
     }
 
-    // Landing to Explore
     setTimeout(() => {
       showPage('landing', 'explore');
     }, 4000);
 
-    // Heart Animation
-    const heartContainer = document.getElementById('heartContainer');
-    let collectedHearts = 0;
-    const maxHearts = 50;
-    let heartInterval;
+    document.getElementById('timelineButton').addEventListener('click', () => {
+      heartInterval = setInterval(createHeart, 100);
+    });
 
     function createHeart() {
       const heart = document.createElement('div');
@@ -252,8 +265,13 @@
       });
     }
 
-    document.getElementById('timelineButton').addEventListener('click', () => {
-      heartInterval = setInterval(createHeart, 100);
+    // Audio autoplay compatibility
+    window.addEventListener('DOMContentLoaded', () => {
+      const audio = document.getElementById("heatWaveSong");
+      audio.volume = 0.5;
+      audio.play().catch(() => {
+        document.addEventListener('click', () => audio.play(), { once: true });
+      });
     });
   </script>
 </body>
