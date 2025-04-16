@@ -5,118 +5,126 @@
   <title>For Someone Special</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
-    html, body {
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
       margin: 0;
-      padding: 0;
       font-family: 'Georgia', serif;
-      background: radial-gradient(circle at top left, #ffe4ec, #fff0f5);
-      overflow: hidden;
       color: #4a0f33;
+      text-align: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to top, #fff0f3, #fce4ec);
+      z-index: -2;
     }
 
     .page {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 20px;
       position: absolute;
       top: 0;
       left: 0;
-      height: 100vh;
-      width: 100vw;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 30px;
-      background: inherit;
-      transform-style: preserve-3d;
-      backface-visibility: hidden;
       opacity: 0;
+      transform: translateX(100%);
+      transition: all 1s ease;
       pointer-events: none;
-      z-index: 1;
     }
 
     .active {
       opacity: 1;
+      transform: translateX(0);
       pointer-events: auto;
-      z-index: 5;
-    }
-
-    .transitionIn {
-      animation: pageEnter 1.5s ease both;
-    }
-
-    .transitionOut {
-      animation: pageExit 1s ease forwards;
-    }
-
-    @keyframes pageEnter {
-      0% {
-        opacity: 0;
-        transform: rotateY(-90deg) scale(0.9);
-      }
-      100% {
-        opacity: 1;
-        transform: rotateY(0deg) scale(1);
-      }
-    }
-
-    @keyframes pageExit {
-      0% {
-        opacity: 1;
-        transform: scale(1);
-      }
-      100% {
-        opacity: 0;
-        transform: scale(1.1) rotateY(90deg);
-      }
-    }
-
-    h1, h2 {
-      font-size: 2.5em;
-      margin: 0 0 20px 0;
-    }
-
-    button {
-      padding: 15px 30px;
-      font-size: 1.2em;
-      background-color: #ff4081;
-      color: white;
-      border: none;
-      border-radius: 30px;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-      margin-top: 20px;
-      cursor: pointer;
-      transition: transform 0.2s ease;
       z-index: 10;
     }
 
-    button:hover {
-      transform: scale(1.1);
+    #landing h1 {
+      font-size: 2.7em;
+      animation: blink 1.5s infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0.6; }
+    }
+
+    #timelineButton {
+      padding: 15px 30px;
+      font-size: 1.3em;
+      background-color: #d81b60;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      margin-top: 20px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      z-index: 10;
     }
 
     #storyEntry {
-      font-size: 1.3em;
-      background: rgba(255, 255, 255, 0.85);
-      padding: 25px;
-      border-radius: 20px;
+      font-size: 1.4em;
       max-width: 700px;
-      box-shadow: 0 0 25px rgba(255, 105, 135, 0.3);
+      margin: 30px auto;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(255, 105, 135, 0.4);
+    }
+
+    button.nextDay {
+      padding: 12px 25px;
+      font-size: 1.1em;
+      background-color: #e91e63;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      margin-top: 20px;
+      cursor: pointer;
     }
 
     #finalQuestion {
       display: none;
       font-size: 1.5em;
       margin-top: 30px;
-      color: #880e4f;
     }
 
-    /* Hearts */
+    #finalQuestion button {
+      padding: 14px 30px;
+      font-size: 1.2em;
+      background: linear-gradient(45deg, #ff4081, #f50057);
+      color: #fff;
+      border: none;
+      border-radius: 25px;
+      box-shadow: 0 5px 15px rgba(255, 64, 129, 0.5);
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    #finalQuestion button:hover {
+      transform: scale(1.05);
+    }
+
+    /* Falling Hearts */
     .heart {
       position: absolute;
-      top: -30px;
-      color: #ff1493;
-      font-size: 22px;
+      top: -50px;
+      color: #e91e63;
+      font-size: 24px;
       animation: fall 3s linear forwards;
       pointer-events: none;
-      z-index: 0;
     }
 
     @keyframes fall {
@@ -126,7 +134,7 @@
       }
       100% {
         transform: translateY(100vh);
-        opacity: 1;
+        opacity: 0.7;
       }
     }
 
@@ -134,48 +142,51 @@
       position: fixed;
       top: 0;
       left: 0;
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
+      width: 100%;
+      height: 100%;
       pointer-events: none;
-      z-index: 0; /* Ensures hearts are always behind everything */
+      overflow: hidden;
+      z-index: -1;
     }
   </style>
 </head>
 <body>
 
-  <!-- Page 1 -->
+  <!-- First Page -->
   <div class="page active" id="landing">
-    <h1>I have something to say...</h1>
+    <h1>I have something to say...🥺</h1>
   </div>
 
-  <!-- Page 2 -->
+  <!-- Explore Page -->
   <div class="page" id="explore">
     <h2>This is our story</h2>
     <button id="timelineButton">Explore the Timeline</button>
+    <div id="heartContainer"></div>
   </div>
 
-  <!-- Page 3 -->
+  <!-- Timeline Page -->
   <div class="page" id="timeline">
     <div id="storyEntry">
       Day 1: We first met... it was nothing special at the time, just two strangers crossing paths. No feelings. No expectations.
     </div>
     <button class="nextDay" onclick="nextEntry()">Next Day</button>
+
     <div id="finalQuestion">
-      <p>You once said I was a material worth dating...</p>
-      <p><strong>Am I still worth it?</strong></p>
+      <p>You once said I was a material worth dating...🥺</p>
+      <p><strong>Am I still worth it...🥺?</strong></p>
       <button onclick="revealLove()">Yes, You Are</button>
     </div>
   </div>
 
-  <div id="heartContainer"></div>
+  <!-- Audio -->
+  <audio id="heatWaveSong" src="heat-waves.mp3" autoplay loop></audio>
 
   <script>
     const entries = [
       "Day 1: We first met... it was nothing special at the time, just two strangers crossing paths. No feelings. No expectations.",
-      "Day 5: We began talking more often. And suddenly, those late-night calls became the best part of my day.",
-      "Day 9: I noticed your smile when I talked. You laughed at my lame jokes. I could tell—you were interested. And... I was too.",
-      "Day 14: I still remember your words... you said I was a material worth dating. Those words haven’t left me since."
+      "Next Day: We began talking more often. And suddenly, those late-night calls became the best part of my day🥰",
+      "Next Day: I noticed your smile when I talked. You laughed at my lame jokes. I could tell—you were interested. And... I was too😊.",
+      "Day 14: I still remember your words... you said I was a material worth dating. Those words haven’t left me since🙃."
     ];
 
     let entryIndex = 0;
@@ -193,40 +204,55 @@
     }
 
     function revealLove() {
-      document.getElementById("finalQuestion").innerHTML = "<p>You’ve made my heart smile again.</p><p>Thank you for believing in us.</p>";
+      document.getElementById("finalQuestion").innerHTML = "<p>You’ve made my heart smile again😍🥰.</p><p>Thank you for believing in us🥰.</p>";
+      createFallingHearts();
     }
 
-    function transitionPages(fromId, toId) {
-      const fromPage = document.getElementById(fromId);
-      const toPage = document.getElementById(toId);
+    function createFallingHearts() {
+      const heartContainer = document.getElementById('heartContainer');
+      let collectedHearts = 0;
+      const maxHearts = 50;
+      let heartInterval;
 
-      fromPage.classList.add('transitionOut');
+      heartInterval = setInterval(() => {
+        const heart = document.createElement('div');
+        heart.classList.add('heart');
+        heart.innerHTML = '💖';
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.fontSize = (Math.random() * 20 + 20) + 'px';
+        heartContainer.appendChild(heart);
+
+        heart.addEventListener('animationend', () => {
+          heart.remove();
+          collectedHearts++;
+          if (collectedHearts >= maxHearts) {
+            clearInterval(heartInterval);
+          }
+        });
+      }, 50);
+    }
+
+    function showPage(from, to) {
+      document.getElementById(from).classList.remove('active');
       setTimeout(() => {
-        fromPage.classList.remove('active', 'transitionOut');
-        toPage.classList.add('active', 'transitionIn');
-        setTimeout(() => {
-          toPage.classList.remove('transitionIn');
-        }, 1500);
-      }, 1000);
+        document.getElementById(to).classList.add('active');
+      }, 300);
     }
 
     setTimeout(() => {
-      transitionPages('landing', 'explore');
+      showPage('landing', 'explore');
     }, 4000);
 
-    const heartContainer = document.getElementById('heartContainer');
-    let collectedHearts = 0;
-    const maxHearts = 80;
-    let heartInterval;
+    document.getElementById('timelineButton').addEventListener('click', () => {
+      heartInterval = setInterval(createHeart, 100);
+    });
 
     function createHeart() {
       const heart = document.createElement('div');
       heart.classList.add('heart');
       heart.innerHTML = '💖';
       heart.style.left = Math.random() * 100 + 'vw';
-      heart.style.fontSize = (Math.random() * 20 + 18) + 'px';
-      heart.style.animationDuration = (2 + Math.random() * 2) + 's';
-
+      heart.style.fontSize = (Math.random() * 20 + 20) + 'px';
       heartContainer.appendChild(heart);
 
       heart.addEventListener('animationend', () => {
@@ -234,18 +260,19 @@
         collectedHearts++;
         if (collectedHearts >= maxHearts) {
           clearInterval(heartInterval);
-          setTimeout(() => {
-            transitionPages('explore', 'timeline');
-          }, 1000);
+          showPage('explore', 'timeline');
         }
       });
     }
 
-    document.getElementById('timelineButton').addEventListener('click', () => {
-      collectedHearts = 0;
-      heartInterval = setInterval(createHeart, 80);
+    // Audio autoplay compatibility
+    window.addEventListener('DOMContentLoaded', () => {
+      const audio = document.getElementById("heatWaveSong");
+      audio.volume = 0.5;
+      audio.play().catch(() => {
+        document.addEventListener('click', () => audio.play(), { once: true });
+      });
     });
   </script>
-
 </body>
 </html>
