@@ -101,20 +101,22 @@
       margin-top: 30px;
     }
 
+    /* Styled "Yes, You Are" button */
     #finalQuestion button {
-      padding: 14px 30px;
+      padding: 14px 28px;
       font-size: 1.2em;
-      background: linear-gradient(45deg, #ff4081, #f50057);
-      color: #fff;
+      background: linear-gradient(135deg, #ff6f91, #ff9671);
+      color: white;
       border: none;
-      border-radius: 25px;
-      box-shadow: 0 5px 15px rgba(255, 64, 129, 0.5);
+      border-radius: 30px;
       cursor: pointer;
-      transition: transform 0.2s ease;
+      box-shadow: 0 0 15px rgba(255, 105, 135, 0.5);
+      transition: transform 0.2s ease, box-shadow 0.3s ease;
     }
 
     #finalQuestion button:hover {
-      transform: scale(1.05);
+      transform: scale(1.1);
+      box-shadow: 0 0 25px rgba(255, 105, 135, 0.8);
     }
 
     /* Falling Hearts */
@@ -152,6 +154,12 @@
 </head>
 <body>
 
+  <!-- Audio for Background Music -->
+  <audio autoplay loop>
+    <source src="https://github.com/aman77singh/Aman-Singh/blob/main/heat-waves.mp3?raw=true" type="audio/mp3">
+    Your browser does not support the audio element.
+  </audio>
+
   <!-- First Page -->
   <div class="page active" id="landing">
     <h1>I have something to say...🥺</h1>
@@ -177,9 +185,6 @@
       <button onclick="revealLove()">Yes, You Are</button>
     </div>
   </div>
-
-  <!-- Audio -->
-  <audio id="heatWaveSong" src="heat-waves.mp3" autoplay loop></audio>
 
   <script>
     const entries = [
@@ -239,13 +244,16 @@
       }, 300);
     }
 
+    // Landing to Explore
     setTimeout(() => {
       showPage('landing', 'explore');
     }, 4000);
 
-    document.getElementById('timelineButton').addEventListener('click', () => {
-      heartInterval = setInterval(createHeart, 100);
-    });
+    // Heart Animation
+    const heartContainer = document.getElementById('heartContainer');
+    let collectedHearts = 0;
+    const maxHearts = 50;
+    let heartInterval;
 
     function createHeart() {
       const heart = document.createElement('div');
@@ -265,13 +273,8 @@
       });
     }
 
-    // Audio autoplay compatibility
-    window.addEventListener('DOMContentLoaded', () => {
-      const audio = document.getElementById("heatWaveSong");
-      audio.volume = 0.5;
-      audio.play().catch(() => {
-        document.addEventListener('click', () => audio.play(), { once: true });
-      });
+    document.getElementById('timelineButton').addEventListener('click', () => {
+      heartInterval = setInterval(createHeart, 100);
     });
   </script>
 </body>
